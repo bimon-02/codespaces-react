@@ -1,20 +1,18 @@
-import { useState } from "react";
+import "./App.css";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
+import { useState } from "react";
 import { auth } from "./firebase-config";
-import "./App.css";
 
 function App() {
-  // State variables
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [user, setUser] = useState("");
 
-  // Register function
   const register = async (event) => {
     event.preventDefault();
     try {
@@ -29,9 +27,8 @@ function App() {
     } catch (error) {
       console.log(error.message);
     }
-  }
+  };
 
-  // Login function
   const login = async (event) => {
     event.preventDefault();
     try {
@@ -46,16 +43,13 @@ function App() {
     } catch (error) {
       console.log(error.message);
     }
-  }
-  
+  };
 
-  // Logout function
   const logout = async (event) => {
     event.preventDefault();
     await auth.signOut();
     setUser("");
-  }
-  
+  };
 
   return (
     <div className="App" style={styles.container}>
