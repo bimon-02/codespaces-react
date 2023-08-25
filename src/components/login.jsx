@@ -1,4 +1,5 @@
 import { useAuth } from "../hooks/context/auth-context";
+import { toast } from "react-hot-toast";
 
 const Login = () => {
   const { user, login, register, token, logout } = useAuth();
@@ -7,7 +8,7 @@ const Login = () => {
     if (user) {
       console.log(user);
     } else {
-      console.log("error");
+      toast.error("Login failed");
     }
   };
   const handleRegister = async () => {
