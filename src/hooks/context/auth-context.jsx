@@ -8,49 +8,35 @@ import {
 import { useCookies } from "react-cookie";
 import { toast } from "react-hot-toast";
 
-const Context = createContext({});
+const AuthContext = createContext();
 
 export function useAuth() {
-  return useContext(Context);
+  return useContext(AuthContext);
 }
 
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState("");
-  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+  const { set: setCookie, remove: removeCookie } = useCookies(["token"]);
 
   const handleAuthError = (error) => {
-    switch (error.code) {
-      case "auth/wrong-password":
-        return "Wrong password";
-      case "auth/user-not-found":
-        return "User not found";
-      case "auth/weak-password":
-        return error.message;
-      case "auth/email-already-in-use":
-        return "Email already in use";
-      default:
-        return error.message;
-    }
+    const errorMessages = {
+      "auth/wrong-password": "Wrong password",
+      "auth/user-not-found": "User not found",
+      "auth/weak-password": error.message,
+      "auth/email-already-in-use": "Email already in use",
+    };
+
+    return errorMessages[error.code] || error.message;
   };
 
-  const login = async (email, password) => {
+  const authenticate = async (authFunction, email, password, successMessage) => {
     try {
-
-      const { user } = await signInWithEmailAndPassword(auth, email, password);
+      const { user } = await authFunction(auth, email, password);
 
       if (user) {
         setUser(user);
         const token = await user.getIdToken();
-
-      const user = await signInWithEmailAndPassword(auth, email, password);
-console.log(user);
-      if (user) {
-        
-        setUser(user.user);
-        setUid(user.user.uid);
-        const token = await user.user.getIdToken();
-
         setToken(token);
         setCookie("token", token, {
           path: "/",
@@ -59,6 +45,7 @@ console.log(user);
           sameSite: "strict",
           maxAge: 3600, // Token expiration time (1 hour)
         });
+        toast.success(successMessage);
         return user;
       } else {
         setUser(null);
@@ -71,27 +58,22 @@ console.log(user);
     }
   };
 
-  const register = async (email, password) => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+  const login = async (email, password) => {
+    return authenticate(
+      signInWithEmailAndPassword,
+      email,
+      password,
+      "Login successful"
+    );
+  };
 
-      const user = userCredential.user;
-      if (user) {
-        setUser(user);
-        return user;
-      } else {
-        setUser(null);
-        return null;
-      }
-    } catch (error) {
-      const errorMessage = handleAuthError(error);
-      toast.error(errorMessage);
-      return null;
-    }
+  const register = async (email, password) => {
+    return authenticate(
+      createUserWithEmailAndPassword,
+      email,
+      password,
+      "Register successful"
+    );
   };
 
   const logout = async () => {
@@ -113,8 +95,8 @@ console.log(user);
   }, [cookies]);
 
   return (
-    <Context.Provider value={{ user, login, register, token, logout }}>
+    <AuthContext.Provider value={{ user, login, register, token, logout }}>
       {children}
-    </Context.Provider>
+    </AuthContext.Provider>
   );
 }
