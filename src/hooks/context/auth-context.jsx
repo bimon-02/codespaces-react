@@ -36,11 +36,21 @@ export default function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     try {
+
       const { user } = await signInWithEmailAndPassword(auth, email, password);
 
       if (user) {
         setUser(user);
         const token = await user.getIdToken();
+
+      const user = await signInWithEmailAndPassword(auth, email, password);
+console.log(user);
+      if (user) {
+        
+        setUser(user.user);
+        setUid(user.user.uid);
+        const token = await user.user.getIdToken();
+
         setToken(token);
         setCookie("token", token, {
           path: "/",
