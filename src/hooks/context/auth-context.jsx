@@ -17,7 +17,11 @@ export function useAuth() {
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState("");
-  const { set: setCookie, remove: removeCookie } = useCookies(["token"]);
+  const {
+    cookies,
+    set: setCookie,
+    remove: removeCookie,
+  } = useCookies(["token"]);
 
   const handleAuthError = (error) => {
     const errorMessages = {
@@ -30,7 +34,12 @@ export default function AuthProvider({ children }) {
     return errorMessages[error.code] || error.message;
   };
 
-  const authenticate = async (authFunction, email, password, successMessage) => {
+  const authenticate = async (
+    authFunction,
+    email,
+    password,
+    successMessage
+  ) => {
     try {
       const { user } = await authFunction(auth, email, password);
 
@@ -80,7 +89,7 @@ export default function AuthProvider({ children }) {
     try {
       await signOut(auth);
       setUser(null);
-      setToken(null);
+      setToken("");
       removeCookie("token");
       toast.success("Logged out successfully");
     } catch (error) {
@@ -89,10 +98,10 @@ export default function AuthProvider({ children }) {
     }
   };
 
-  useEffect(() => {
-    const token = cookies.token || null;
-    setToken(token);
-  }, [cookies]);
+  // useEffect(() => {
+  //   const token = cookies.token || "";
+  //   setToken(token);
+  // }, [cookies]);
 
   return (
     <AuthContext.Provider value={{ user, login, register, token, logout }}>
