@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { auth } from "../../firebase-config";
+import { auth } from "../../services/firebase/firebase-config";
+
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -72,7 +73,8 @@ export default function AuthProvider({ children }) {
       signInWithEmailAndPassword,
       email,
       password,
-      "Login successful"
+      "Login successful",
+      
     );
   };
 

@@ -4,9 +4,9 @@ import { Outlet, Navigate } from "react-router-dom";
 
 const ProtectedRoutes = () => {
   // Replace with your authentication logic
-  let isAuthenticated = { token: false };
+  let auth = { token: false };
 
-  return isAuthenticated.token ? <Outlet /> : <Navigate to="/login" />;
+  return auth.token ? <Outlet /> : <Navigate to="/login" />;
 };
 
 export default ProtectedRoutes;

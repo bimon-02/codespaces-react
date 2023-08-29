@@ -5,17 +5,24 @@ import { toast } from "react-hot-toast";
 const Login = () => {
   const { login, register, token, logout } = useAuth();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("bimon2000@gmail.com");
+  const [password, setPassword] = useState("123456");
 
   const handleAuthentication = async (action) => {
+    console.log("Action:", action);
+    console.log("Email:", email);
+    console.log("Password:", password);
+
     const user = await action(email, password);
+    console.log("User:", user);
+
     if (user) {
       toast.success(`${action === login ? "Login" : "Register"} successful`);
     } else {
       toast.error("Authentication failed");
     }
   };
+
 
   return (
     <div>
